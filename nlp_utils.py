@@ -1,22 +1,23 @@
 import nltk, string
 from nltk.corpus import stopwords
 import json, requests
+import sys,math
 
-=============================================================================
-
+#=============================================================================
+#
 #`1 NLTK
 #	a)stopwords, punctation
 #	b)tokenize(text)
 #	c)POS_transform(POS)
-
-=============================================================================
+#
+#=============================================================================
 
 stopwords = stopwords.words('english')
 
 puncts = string.punctuation + '\r\n``\'\''
 
 ## remove punctuations nums and stopwords	
-def tokenize(text, lower=True, **removal):
+def tokenize(text, lower=True, *removal):
 	#removal = config['input.remove']
 	#if config['input.lower']:
 	if lower:
@@ -61,13 +62,13 @@ def POS_transform(pos):
 	return pos
 
 
-=============================================================================
-
+#=============================================================================
+#
 #`2 StanfordCoreNLP
 #	nlp.parse(text)
 #	output json
-
-=============================================================================
+#
+#=============================================================================
 
 
 

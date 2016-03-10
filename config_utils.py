@@ -1,5 +1,5 @@
 from nlp_utils import *
-
+from collections import defaultdict
 
 def read_config(config_file):
 	fp = open(config_file)
@@ -43,8 +43,8 @@ def read_data(config):
 		fields = line.strip().split(delimiter)
 		s1 = fields[indices[0]]
 		s2 = fields[indices[1]]
-		t1 = tokenize(s1, config['input.lower'], config['input.remove'])
-		t2 = tokenize(s2, config)
+		t1 = tokenize(s1, config['input.lower'], *config['input.remove'])
+		t2 = tokenize(s2, config['input.lower'], *config['input.remove'])
 		for word in set(t1):
 			vocab[word] += 1
 		for word in set(t2):

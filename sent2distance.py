@@ -3,6 +3,7 @@ from distance_utils import *
 from nlp_utils import *
 from embedding_utils import *
 from utils import *
+import sys,math
 
 def build_sent(words, w2v_dict, dim, convey, weight):
 	"""
@@ -43,7 +44,7 @@ def build_features(revs, w2v_dict, config):
 			sent2 = build_sent(rev["text"][1], w2v_dict, dim, convey, weight)
 			#print rev["text"][0], sent1
 			#print rev["text"][1], sent2
-			feats = build_features_helper(L2_norm(sent1), L2_norm(sent2), funs)
+			feats = all_distance(L2_norm(sent1), L2_norm(sent2), funs)
 			features[i] += feats
 			#Ys[i] = rev["label"]
 			print '\r%d'%i,
