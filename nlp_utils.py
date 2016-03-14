@@ -116,6 +116,7 @@ class StanfordCoreNLP:
         return output
 
 class StanfordNLP:
+	
 	def __init__(self):
 		self.server = StanfordCoreNLP('http://localhost:9000')
 
@@ -125,6 +126,32 @@ class StanfordNLP:
 			'outputFormat': 'json'
 		})
 		return output
+
+	def tokens(self, text):
+		parse_text = parse(text)
+		result = []
+		for sent in parse_text['sentences']:
+			for token in sent['tokens']:
+				result.append([token['word'], token['pos']])
+		return result
+
+	def tokenize(self, text, lower=True, *removal):
+		tokens = self.tokens(text)
+		if lower: 
+			for idx in range(len(tokens)):
+				tokens[idx][0] = tokens[idx][0].lower()
+		for key in removal:
+			if key == "stopwords":
+				tokens = [ token for token in tokens if token[0] not in stopwords ]
+			elif key == "punctuations":
+				tokens = [ token for token in tokens if token[0] not in puncts ]
+			else:
+				print "Key error [input.remove]: %s"%key
+				sys.exit(0)
+		#words = [ token[0] for token  in tokens ]
+		#poss = [ token[1] for token in tokens ]
+		words, poss = zip(*tokens)
+		return words, poss
 
 nlp = StanfordNLP()
 =======
