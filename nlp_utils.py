@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import nltk, string
 from nltk.corpus import stopwords
 import json, requests
@@ -7,9 +6,9 @@ import sys,math
 #=============================================================================
 #
 #`1 NLTK
-#	a)stopwords, punctation
-#	b)tokenize(text)
-#	c)POS_transform(POS)
+#    a)stopwords, punctation
+#    b)tokenize(text)
+#    c)POS_transform(POS)
 #
 #=============================================================================
 
@@ -17,57 +16,57 @@ stopwords = stopwords.words('english')
 
 puncts = string.punctuation + '\r\n``\'\''
 
-## remove punctuations nums and stopwords	
+## remove punctuations nums and stopwords    
 def tokenize(text, lower=True, *removal):
-	#removal = config['input.remove']
-	#if config['input.lower']:
-	if lower:
-		text = text.lower()
-	tokens = nltk.word_tokenize(text)
-	for key in removal:
-		if key == "stopwords":
-			tokens = [ token for token in tokens if token not in stopwords ]
-		elif key == "punctuations":
-			tokens = [ token for token in tokens if token not in puncts ]
-		else:
-			print "Key error [input.remove]: %s"%key
-			sys.exit(0)
-	return tokens
+    #removal = config['input.remove']
+    #if config['input.lower']:
+    if lower:
+        text = text.lower()
+    tokens = nltk.word_tokenize(text)
+    for key in removal:
+        if key == "stopwords":
+            tokens = [ token for token in tokens if token not in stopwords ]
+        elif key == "punctuations":
+            tokens = [ token for token in tokens if token not in puncts ]
+        else:
+            print "Key error [input.remove]: %s"%key
+            sys.exit(0)
+    return tokens
 
 
 def calc_idf(revs):
-	words = []
-	for i in xrange(len(revs)):
-		rev = revs[i]
-		toks = set(rev["text"][0] + rev["text"][1])
-		words += list(toks)
-	vdist = nltk.FreqDist(words)
-	doc_num = len(revs)
-	idf_dict = {}
-	for key in vdist:
-		idf_dict[key] = math.log(float(doc_num)/float(vdist[key]))/math.log(2)
-	return idf_dict
+    words = []
+    for i in xrange(len(revs)):
+        rev = revs[i]
+        toks = set(rev["text"][0] + rev["text"][1])
+        words += list(toks)
+    vdist = nltk.FreqDist(words)
+    doc_num = len(revs)
+    idf_dict = {}
+    for key in vdist:
+        idf_dict[key] = math.log(float(doc_num)/float(vdist[key]))/math.log(2)
+    return idf_dict
 
 
 def POS_transform(pos):
-	if pos == 'NN' or pos == 'NNS' or pos == 'NNP' or pos == 'NNPS':
-		pos = 'n'
-	elif pos =='VB' or pos == 'VBD' or pos == 'VBG' or pos == 'VBN' or pos=="VBP" or pos=="VBZ":
-		pos = 'v'
-	elif pos == 'JJ' or pos == 'JJR' or pos == 'JJS':
-		pos = 'a'
-	elif pos == 'RB' or pos == 'RBR' or pos == 'RBS':
-		pos = 'r'
-	else:
-		pos = '#'
-	return pos
+    if pos == 'NN' or pos == 'NNS' or pos == 'NNP' or pos == 'NNPS':
+        pos = 'n'
+    elif pos =='VB' or pos == 'VBD' or pos == 'VBG' or pos == 'VBN' or pos=="VBP" or pos=="VBZ":
+        pos = 'v'
+    elif pos == 'JJ' or pos == 'JJR' or pos == 'JJS':
+        pos = 'a'
+    elif pos == 'RB' or pos == 'RBR' or pos == 'RBS':
+        pos = 'r'
+    else:
+        pos = '#'
+    return pos
 
 
 #=============================================================================
 #
 #`2 StanfordCoreNLP
-#	nlp.parse(text)
-#	output json
+#    nlp.parse(text)
+#    output json
 #
 #=============================================================================
 
@@ -91,7 +90,7 @@ class StanfordCoreNLP:
         if ('outputFormat' in properties 
              and properties['outputFormat'] == 'json'):
             try:
-				output = json.loads(output, strict=False)
+                output = json.loads(output, strict=False)
             except:
                 pass
         return output
@@ -116,171 +115,45 @@ class StanfordCoreNLP:
         return output
 
 class StanfordNLP:
-	
-	def __init__(self):
-		self.server = StanfordCoreNLP('http://localhost:9000')
+    
+    def __init__(self):
+        self.server = StanfordCoreNLP('http://localhost:9000')
 
-	def parse(self, text):
-		output = self.server.annotate(text, properties={
-			'annotators': 'tokenize,lemma,ssplit,pos,depparse,parse,ner',
-			'outputFormat': 'json'
-		})
-		return output
-
-	def tokens(self, text):
-		parse_text = parse(text)
-		result = []
-		for sent in parse_text['sentences']:
-			for token in sent['tokens']:
-				result.append([token['word'], token['pos']])
-		return result
-
-	def tokenize(self, text, lower=True, *removal):
-		tokens = self.tokens(text)
-		if lower: 
-			for idx in range(len(tokens)):
-				tokens[idx][0] = tokens[idx][0].lower()
-		for key in removal:
-			if key == "stopwords":
-				tokens = [ token for token in tokens if token[0] not in stopwords ]
-			elif key == "punctuations":
-				tokens = [ token for token in tokens if token[0] not in puncts ]
-			else:
-				print "Key error [input.remove]: %s"%key
-				sys.exit(0)
-		#words = [ token[0] for token  in tokens ]
-		#poss = [ token[1] for token in tokens ]
-		words, poss = zip(*tokens)
-		return words, poss
-
-nlp = StanfordNLP()
-=======
-import nltk, string
-from nltk.corpus import stopwords
-import json, requests
-import sys,math
-
-#=============================================================================
-#
-#`1 NLTK
-#	a)stopwords, punctation
-#	b)tokenize(text)
-#	c)POS_transform(POS)
-#
-#=============================================================================
-
-stopwords = stopwords.words('english')
-
-puncts = string.punctuation + '\r\n``\'\''
-
-## remove punctuations nums and stopwords	
-def tokenize(text, lower=True, *removal):
-	#removal = config['input.remove']
-	#if config['input.lower']:
-	if lower:
-		text = text.lower()
-	tokens = nltk.word_tokenize(text)
-	for key in removal:
-		if key == "stopwords":
-			tokens = [ token for token in tokens if token not in stopwords ]
-		elif key == "punctuations":
-			tokens = [ token for token in tokens if token not in puncts ]
-		else:
-			print "Key error [input.remove]: %s"%key
-			sys.exit(0)
-	return tokens
-
-
-def calc_idf(revs):
-	words = []
-	for i in xrange(len(revs)):
-		rev = revs[i]
-		toks = set(rev["text"][0] + rev["text"][1])
-		words += list(toks)
-	vdist = nltk.FreqDist(words)
-	doc_num = len(revs)
-	idf_dict = {}
-	for key in vdist:
-		idf_dict[key] = math.log(float(doc_num)/float(vdist[key]))/math.log(2)
-	return idf_dict
-
-
-def POS_transform(pos):
-	if pos == 'NN' or pos == 'NNS' or pos == 'NNP' or pos == 'NNPS':
-		pos = 'n'
-	elif pos =='VB' or pos == 'VBD' or pos == 'VBG' or pos == 'VBN' or pos=="VBP" or pos=="VBZ":
-		pos = 'v'
-	elif pos == 'JJ' or pos == 'JJR' or pos == 'JJS':
-		pos = 'a'
-	elif pos == 'RB' or pos == 'RBR' or pos == 'RBS':
-		pos = 'r'
-	else:
-		pos = '#'
-	return pos
-
-
-#=============================================================================
-#
-#`2 StanfordCoreNLP
-#	nlp.parse(text)
-#	output json
-#
-#=============================================================================
-
-
-
-class StanfordCoreNLP:
-
-    def __init__(self, server_url):
-        if server_url[-1] == '/':
-            server_url = server_url[:-1]
-        self.server_url = server_url
-
-    def annotate(self, text, properties=None):
-        if not properties:
-            properties = {}
-        r = requests.get(
-            self.server_url, params={
-                'properties': str(properties)
-            }, data=text)
-        output = r.text
-        if ('outputFormat' in properties 
-             and properties['outputFormat'] == 'json'):
-            try:
-				output = json.loads(output, strict=False)
-            except:
-                pass
+    def parse(self, text):
+        output = self.server.annotate(text, properties={
+            'annotators': 'tokenize,lemma,ssplit,pos,depparse,parse,ner',
+            'outputFormat': 'json'
+        })
         return output
 
-    def tokensregex(self, text, pattern, filter):
-        return self.regex('/tokensregex', text, pattern, filter)
+    def tokens(self, text):
+        parse_text = self.parse(text)
+        result = []
+        for sent in parse_text['sentences']:
+            for token in sent['tokens']:
+                result.append([token['word'], token['pos']])
+        return result
 
-    def semgrex(self, text, pattern, filter):
-        return self.regex('/semgrex', text, pattern, filter)
-
-    def regex(self, endpoint, text, pattern, filter):
-        r = requests.get(
-            self.server_url + endpoint, params={
-                'pattern':  pattern,
-                'filter': filter
-            }, data=text)
-        output = r.text
-        try:
-            output = json.loads(r.text)
-        except:
-            pass
-        return output
-
-class StanfordNLP:
-	def __init__(self):
-		self.server = StanfordCoreNLP('http://localhost:9000')
-
-	def parse(self, text):
-		output = self.server.annotate(text, properties={
-			'annotators': 'tokenize,lemma,ssplit,pos,depparse,parse,ner',
-			'outputFormat': 'json'
-		})
-		return output
+    def tokenize(self, text, lower=True, *removal):
+        tokens = self.tokens(text)
+        if lower: 
+            for idx in range(len(tokens)):
+                tokens[idx][0] = tokens[idx][0].lower()
+        for key in removal:
+            if key == "stopwords":
+                tokens = [ token for token in tokens if token[0] not in stopwords ]
+            elif key == "punctuations":
+                tokens = [ token for token in tokens if token[0] not in puncts ]
+            else:
+                print "Key error [input.remove]: %s"%key
+                sys.exit(0)
+        #words = [ token[0] for token  in tokens ]
+        #poss = [ token[1] for token in tokens ]
+        if tokens:
+            words, poss = zip(*tokens)
+        else :
+            words, poss = [], []
+        print words, poss
+        return words, poss
 
 nlp = StanfordNLP()
->>>>>>> bob/master
