@@ -3,7 +3,19 @@ from distance_utils import *
 from nlp_utils import *
 from embedding_utils import *
 from utils import *
+from grid_search import *
 import sys,math
+
+
+it = product(param_grids[0])
+pos_dict = it.next()
+print pos_dict
+
+def pos_weight(pos):
+	pos_t = POS_transform(pos)
+	w_pos = pos_dict[pos_t]
+	return w_pos
+	pass
 
 def build_sent(words, w2v_dict, dim, convey, weight):
 	'''
@@ -20,7 +32,8 @@ def build_sent(words, w2v_dict, dim, convey, weight):
 		else:
 			print 'Unknown convey: %s' % convey
 			sys.exit(0)
-		w2v = vdist[word] * w * w2v_dict[word]
+		w_pos = pos_weight(word)
+		w2v = vdist[word] * w * w2v_dict[word] * w_pos
 		vec = vec + w2v
 	return vec
 
@@ -40,8 +53,8 @@ def build_features(revs, w2v_dict, config):
 	for convey in conveys:
 		for i in xrange(len(revs)):
 			rev = revs[i]
-			sent1 = build_sent(rev["text"][0], w2v_dict, dim, convey, weight)
-			sent2 = build_sent(rev["text"][1], w2v_dict, dim, convey, weight)
+			sent1 = build_sent(rev["text"][0], rev["pos"][0], w2v_dict, dim, convey, weight)
+			sent2 = build_sent(rev["text"][1], rev["pos"][1], w2v_dict, dim, convey, weight)
 			#print rev["text"][0], sent1
 			#print rev["text"][1], sent2
 			feats = all_distance(L2_norm(sent1), L2_norm(sent2), funs)

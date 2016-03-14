@@ -43,13 +43,14 @@ def read_data(config):
 		fields = line.strip().split(delimiter)
 		s1 = fields[indices[0]]
 		s2 = fields[indices[1]]
-		t1 = tokenize(s1, config['input.lower'], *config['input.remove'])
-		t2 = tokenize(s2, config['input.lower'], *config['input.remove'])
+		t1, p1 = nlp.tokenize(s1, config['input.lower'], *config['input.remove'])
+		t2, p2 = nlp.tokenize(s2, config['input.lower'], *config['input.remove'])
 		for word in set(t1):
 			vocab[word] += 1
 		for word in set(t2):
 			vocab[word] += 1
 		datum = { "text": (t1, t2),
+				  "pos": (p1, p2),
 				  "num_words": (len(t1), len(t2))
 				  }
 		max_l = max2(max2(len(t1), len(t2)), max_l)
