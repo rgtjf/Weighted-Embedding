@@ -4,11 +4,11 @@ from nlp_utils import *
 from embedding_utils import *
 from utils import *
 from grid_search import *
-import sys,math
 from model.utils import *
 from model.indexer_utils import *
 from model.correlation_eval import *
-
+import sys,math
+import numpy as np
 
 def pos_weight(pos, pos_dict):
     pos_t = POS_transform(pos)
@@ -32,7 +32,7 @@ def build_sent(words, poss, w2v_dict, pos_dict, dim, convey, weight):
         else:
             print 'Unknown convey: %s' % convey
             sys.exit(0)
-        w_pos = pos_weight(poss[word])
+        w_pos = pos_weight(poss[word], pos_dict)
         w2v = vdist[word] * w * w2v_dict[word] * w_pos
         vec = vec + w2v
     return vec
@@ -48,7 +48,7 @@ def build_features(revs, w2v_dict, pos_dict, config):
     if 'idf' in conveys or 'tfidf' in conveys:
         weight = calc_idf(revs)
         assert len(weight) == len(w2v_dict), 'length error'
-    features = defaultdict(list)
+    features = []
     #Ys = {}
     for convey in conveys:
         for i in xrange(len(revs)):
@@ -58,10 +58,10 @@ def build_features(revs, w2v_dict, pos_dict, config):
             #print rev["text"][0], sent1
             #print rev["text"][1], sent2
             feats = all_distance(L2_norm(sent1), L2_norm(sent2), funs)
-            features[i] += feats
+            features.append(feats)
             #Ys[i] = rev["label"]
             print '\r%d'%i,
-            sys.stdout.flush()
+            #sys.stdout.flush()    #important! flush out
     #dat = []
     #for i in xrange(len(revs)):
     #    dat.append((Ys[i], features[i]))
@@ -113,17 +113,19 @@ if __name__=="__main__":
     '''
     
     it = product(param_grids[0])
-    gs = readfile(label_file)
-    gs = map(float, gs)
+    gs = read_file(label_file)
     try:
         while True:
-            x = it.next()
-            features = build_features(revs, w2v, x, config)
+            pos_dict = it.next()
+            pos_dict['n'] = pos_dict['v'] = 1.6
+            pos_dict['a'] = pos_dict['r'] = 1.2
+            pos_dict['#'] = 0.8
+            features = build_features(revs, w2v, pos_dict, config)
             features = features_select(features, [0, 3, 4])
+            features = np.asarray(features)
+            features[np.isnan(features)] = 0
             sys = [ sum(x) for x in features ]
-            eval(gs, sys, datasets)
+            eval(gs, sys, datasets, pos_dict)
+            break
     except StopIteration:
         raise Exception("All items weren't successful")
-    #it.next()
-    #pos_dict = it.next()
-    #print pos_dict

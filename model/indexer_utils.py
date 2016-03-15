@@ -1,7 +1,7 @@
 import logging
 
 log_format = '%(asctime)s [%(levelname)s] %(message)s'
-logging.basicConfig(format=log_format, datafmt='%Y-%m-%d %H:%M:%S %p',level=logging.DEBUG)
+logging.basicConfig(filename='example1.log', format=log_format, datafmt='%Y-%m-%d %H:%M:%S %p',level=logging.DEBUG)
 
 class Indexer:
 	

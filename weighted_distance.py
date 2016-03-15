@@ -50,7 +50,7 @@ def build_features(revs, w2v_dict, config):
     if 'idf' in conveys or 'tfidf' in conveys:
         weight = calc_idf(revs)
         assert len(weight) == len(w2v_dict), 'length error'
-    features = defaultdict(list)
+    features = []
     #Ys = {}
     for convey in conveys:
         for i in xrange(len(revs)):
