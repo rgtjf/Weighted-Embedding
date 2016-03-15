@@ -8,6 +8,7 @@ import sys,math
 
 
 it = product(param_grids[0])
+it.next()
 pos_dict = it.next()
 print pos_dict
 
@@ -77,7 +78,8 @@ if __name__=="__main__":
     config = read_config(sys.argv[1])
     print config
     print "loading data...",        
-    revs, vocab, max_l = read_data(config)
+    #revs, vocab, max_l = read_data(config)
+    revs, vocab, max_l = read_data_from_tmp(config)
     print "data loaded!"
     print "number of sentence pairs: " + str(len(revs))
     print "vocab size: " + str(len(vocab))

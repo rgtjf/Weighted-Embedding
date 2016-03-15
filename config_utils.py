@@ -88,10 +88,18 @@ def read_data_from_tmp(config):
         sent_pair = line.strip().split('\t')
         s1 = json.loads(sent_pair[0])
         s2 = json.loads(sent_pair[1])
-        t1, p1 = zip(*s1)
+        if s1 != []:
+            t1, p1 = zip(*s1)
+            t1, p1 = list(t1), list(p1)
+        else:
+            t1, p1 = [], []
         #t1 = list(t1)
         #p1 = list(p1)
-        t2, p2 = zip(*s2)
+        if s2 != []:
+            t2, p2 = zip(*s2)
+            t2, p2 = list(t2), list(p2)
+        else:
+            t2, p2 = [], []
         #t2 = list(t2)
         #p2 = list(p2)
         #t1, p1 = nlp.tokenize(s1, config['input.lower'], *config['input.remove'])
