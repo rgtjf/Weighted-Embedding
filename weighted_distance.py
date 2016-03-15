@@ -17,10 +17,11 @@ def pos_weight(pos):
     return w_pos
     pass
 
-def build_sent(words, w2v_dict, dim, convey, weight):
+def build_sent(words, poss, w2v_dict, dim, convey, weight):
     '''
     Transforms sentence into a list of indices. Pad with zeroes.
     '''
+    poss = dict(zip(words, poss))
     vdist = nltk.FreqDist(words)
     length = float(len(words))
     vec = np.zeros((dim,))
@@ -32,7 +33,7 @@ def build_sent(words, w2v_dict, dim, convey, weight):
         else:
             print 'Unknown convey: %s' % convey
             sys.exit(0)
-        w_pos = pos_weight(word)
+        w_pos = pos_weight(poss[word])
         w2v = vdist[word] * w * w2v_dict[word] * w_pos
         vec = vec + w2v
     return vec

@@ -129,9 +129,13 @@ class StanfordNLP:
     def tokens(self, text):
         parse_text = self.parse(text)
         result = []
-        for sent in parse_text['sentences']:
-            for token in sent['tokens']:
-                result.append([token['word'], token['pos']])
+        if isinstance(parse_text, unicode) or isinstance(parse_text, str):
+            print 'parse', parse_text
+            print "error", text
+        else:
+            for sent in parse_text['sentences']:
+                for token in sent['tokens']:
+                    result.append([token['word'], token['pos']])
         return result
 
     def tokenize(self, text, lower=True, *removal):
@@ -147,13 +151,12 @@ class StanfordNLP:
             else:
                 print "Key error [input.remove]: %s"%key
                 sys.exit(0)
-        #words = [ token[0] for token  in tokens ]
-        #poss = [ token[1] for token in tokens ]
         if tokens:
             words, poss = zip(*tokens)
+            words = list(words)
+            poss = list(poss)
         else :
             words, poss = [], []
-        print words, poss
         return words, poss
 
 nlp = StanfordNLP()
